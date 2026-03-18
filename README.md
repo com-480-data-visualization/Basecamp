@@ -19,27 +19,61 @@ Please, fill the following sections about your project.
 
 ### Dataset
 
-> Find a dataset (or multiple) that you will explore. Assess the quality of the data it contains and how much preprocessing / data-cleaning it will require before tackling visualization. We recommend using a standard dataset as this course is not about scraping nor data processing.
->
-> Hint: some good pointers for finding quality publicly available datasets ([Google dataset search](https://datasetsearch.research.google.com/), [Kaggle](https://www.kaggle.com/datasets), [OpenSwissData](https://opendata.swiss/en/), [SNAP](https://snap.stanford.edu/data/) and [FiveThirtyEight](https://data.fivethirtyeight.com/)).
+We use the **Himalayan Database**, a record of all expeditions to Nepal's Himalayan peaks from 1905 to 2019. The data comes from the [TidyTuesday 2020](https://github.com/rfordatascience/tidytuesday/tree/main/data/2020/2020-09-22) cleaned version of the original [Himalayan Database](https://www.himalayandatabase.com/) compiled by Elizabeth Hawley.
+
+It consists of three CSV files:
+- **peaks.csv** (468 rows): peak name, height, climbing status, first ascent year/country
+- **expeditions.csv** (10,364 rows): expedition details including year, season, highpoint, termination reason, team size, oxygen usage, trekking agency
+- **members.csv** (76,519 rows): individual climber data including age, sex, nationality, role, success, death/injury details
+
+The data is already clean and well-structured. Missing values are limited: age is missing for 4.6% of members, citizenship for only 10%. Date fields are strings that need parsing. The `trekking_agency` field has many null values in early decades (before commercial mountaineering existed), so this is expected, not a data quality issue.
+
+No major preprocessing is needed beyond date conversion and optional merging of the three tables. The dataset is also available on [Kaggle](https://www.kaggle.com/datasets/majunbajun/himalayan-climbing-expeditions). A supplementary 2020-2024 dataset from TidyTuesday 2025 is available if we want to extend the time range.
 
 ### Problematic
 
-> Frame the general topic of your visualization and the main axis that you want to develop.
-> - What am I trying to show with my visualization?
-> - Think of an overview for the project, your motivation, and the target audience.
+Our visualization will tell the story of how Himalayan climbing turned from rare expeditions into a commercial business, and what that transformation costs in human lives.
+
+Mountaineering in Nepal has changed a lot over the past century. In the 1950s, reaching the summit of Everest was a national achievement. Today, hundreds of people summit each spring season, guided by commercial agencies. We want to explore this shift in several ways:
+
+1. **The commercialization arc**: from rare government-backed expeditions to 98%+ agency-organized trips. We want to show how team sizes, hired staff numbers, and expedition frequency have exploded since the 1990s.
+2. **The human cost**: 1,106 people have died in the dataset. We want to examine death rates by peak, altitude, cause (avalanche and falls dominate), and decade. While the per-person death rate has dropped, absolute deaths remain steady because volume keeps growing.
+3. **The ethical question of Sherpas**: hired staff face a 2.0% death rate vs 1.3% for paying members. We want to explore who bears the real risk of commercial mountaineering.
+4. **The use of oxygen**: oxygen users summit at 78% success rate vs 26% without.
+
+**TODO**: Our target audience ... ADD MORE
 
 ### Exploratory Data Analysis
 
-> Pre-processing of the data set you chose
-> - Show some basic statistics and get insights about the data
+Our full EDA is in [`notebooks/eda.ipynb`](notebooks/eda.ipynb). Key findings:
+
+**Scale**: 468 peaks, 10,364 expeditions, 76,519 individual member records spanning 1905-2019, with climbers from 212 countries.
+
+**Growth**: Expeditions grew from single digits per year before the 1950s to 400+ per year by 2019. Autumn leads slightly in expedition count (5,064) over Spring (4,875), but Spring expeditions are larger (Everest is primarily a spring climb).
+
+**Success**: Overall summit rate is 38.2%, but this has climbed steadily from under 20% in early decades to over 50% in recent years, driven by better gear, oxygen, and commercial infrastructure.
+
+**Deaths**: 1,106 total deaths (1.45% overall rate). The rate has declined over time, but the total number of deaths stays roughly the same. Top causes: avalanche (369), falls (331), altitude sickness (102). Everest alone accounts for 306 deaths.
+
+**Demographics**: 90.8% male. Nepal is the top nationality (16,135 members, mostly hired staff), followed by USA (6,448), Japan (6,432), UK (5,219), France (4,611). Mean age is 35.
+
+**Oxygen**: Supplemental oxygen correlates with higher success (78% vs 26%) and lower death rates. Usage has increased over time, especially on 8000m peaks.
+
+**Commercialization**: Trekking agency usage rose from near-zero before 1970 to 98.4% of expeditions since 2010. Hired staff now make up a growing share of expedition members.
 
 ### Related work
 
-> - What others have already done with the data?
-> - Why is your approach original?
-> - What source of inspiration do you take? Visualizations that you found on other websites or magazines (might be unrelated to your data).
-> - In case you are using a dataset that you have already explored in another context (ML or ADA course, semester project...), you are required to share the report of that work to outline the differences with the submission for this class.
+The Himalayan Database has been explored in several contexts:
+
+- The [TidyTuesday community](https://github.com/rfordatascience/tidytuesday/tree/main/data/2020/2020-09-22) produced many static analyses in R when this dataset was featured in September 2020. Most focus on single charts (e.g., death rates by peak, success over time) rather than an interactive visualization.
+- Alex Cookson's [blog post](https://www.alexcookson.com/post/analyzing-himalayan-peaks-first-ascents/) analyzed first ascents and peak difficulty. His cleaned version of the data is what we use.
+- The [Himalayan Database website](https://www.himalayandatabase.com/) itself offers a searchable interface but no visual storytelling.
+
+**What makes our approach original**: existing work treats this data as a collection of charts. We plan to build a narrative that will show how climbing changed, from exploration to industry. The structure will follow a timeline arc, with some interactive elements that will let users explore the data at their own pace.
+
+**Inspirations**: [Johnny Harris](https://www.youtube.com/watch?v=OMbV1rIPhCg&t=268s&pp=ygULc3dpc3MgdHJhaW4%3D) and his recent work on filming and visualizing Swiss train system, and especially his works on visualizing maps and telling stories through them. **TODO** ADD MORE
+
+None of us have used this dataset in a previous course.
 
 ## Milestone 2 (17th April, 5pm)
 
