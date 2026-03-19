@@ -41,7 +41,8 @@ Mountaineering in Nepal has changed a lot over the past century. In the 1950s, r
 3. **The ethical question of Sherpas**: hired staff face a 2.0% death rate vs 1.3% for paying members. We want to explore who bears the real risk of commercial mountaineering.
 4. **The use of oxygen**: oxygen users summit at 78% success rate vs 26% without.
 
-**TODO**: Our target audience ... ADD MORE
+Our goal is to not only show famous stories about Everest, but to look at the bigger picture using data. Usually people see only big successes or accidents, but not how climbing changed over time. We want to show these long-term changes and what they mean for safety and access. It also helps to ask an important question: even if more people can climb now, who is really taking the biggest risks?
+The target audience is mainly general people who are interested in mountaineering or who have seen news about Everest overcrowding. We try to make the visualizations simple and clear, so they are easy to understand without technical background, but still show important patterns in the data.
 
 ### Exploratory Data Analysis
 
