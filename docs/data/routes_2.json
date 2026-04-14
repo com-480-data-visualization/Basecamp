@@ -1,0 +1,189 @@
+{
+  "image": "Mount Everest Climbing Routes 1924-1996 photomap-fr.svg",
+  "legend_note": "Colors come from the original SVG legend. Colors repeat across the left and right legend columns, so both color and legend_column matter.",
+  "sources_index": {
+    "map": "Wikimedia Commons route map and SVG legend",
+    "arnette_2026": "Alan Arnette, Comparing the Routes of Everest, 2026 edition",
+    "britannica": "Britannica Everest history pages",
+    "aac": "American Alpine Journal expedition reports",
+    "aj": "Alpine Journal expedition reports"
+  },
+  "routes": [
+    {
+      "label": "1924 British (Mallory and Irvine)",
+      "year": 1924,
+      "team": "British",
+      "legend_column": "left",
+      "color_name": "magenta",
+      "color_hex": "#ff00ff",
+      "legend_style": "partly_dashed",
+      "note": "Mallory and Irvine climbed from the North Col and disappeared high on the mountain. Their last line above the Northeast Ridge is still debated, so this route remains Everest's oldest and most famous summit mystery.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1960 Chinese",
+      "year": 1960,
+      "team": "Chinese",
+      "legend_column": "left",
+      "color_name": "bright green",
+      "color_hex": "#00ff00",
+      "legend_style": "solid",
+      "note": "This north-side route followed the North Col, North Ridge, and Northeast Ridge. The Chinese ascent was later accepted as the first summit from Tibet, though it was questioned in the West for years.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1980 Japanese",
+      "year": 1980,
+      "team": "Japanese",
+      "legend_column": "left",
+      "color_name": "yellow",
+      "color_hex": "#ffcc00",
+      "legend_style": "solid",
+      "note": "A Japanese team made the first full ascent of the North Face from the Central Rongbuk Glacier, climbing into the Hornbein Couloir. They reached the summit and made a very high bivouac during descent.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1980 Reinhold Messner",
+      "year": 1980,
+      "team": "Reinhold Messner solo",
+      "legend_column": "left",
+      "color_name": "orange",
+      "color_hex": "#ff7f2a",
+      "legend_style": "solid",
+      "note": "Messner crossed the upper North Face into the Great Couloir and finished alone, without oxygen, in monsoon season. It is still one of the boldest and cleanest ascents ever made on Everest.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1983 American",
+      "year": 1983,
+      "team": "American",
+      "legend_column": "left",
+      "color_name": "red",
+      "color_hex": "#ff0000",
+      "legend_style": "solid",
+      "note": "The American team climbed the Kangshung Face by a central buttress, then joined the Southeast Ridge below the South Summit. It gave Everest's East Face its first successful ascent by a major expedition.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1984 American",
+      "year": 1984,
+      "team": "American",
+      "legend_column": "left",
+      "color_name": "dark green",
+      "color_hex": "#008000",
+      "legend_style": "solid",
+      "note": "Phil Ershler completed this American north-face variation after earlier attempts had failed. The line used the North Col approach, traversed the face, and reached the Great Couloir before the final summit slopes.",
+      "source_keys": ["map", "arnette_2026", "aac"]
+    },
+    {
+      "label": "1984 Australian",
+      "year": 1984,
+      "team": "Australian",
+      "legend_column": "left",
+      "color_name": "black",
+      "color_hex": "#000000",
+      "legend_style": "solid",
+      "note": "The Australians opened a bold new North Face route through the snowfield they called White Limbo, then gained the Great Couloir. Tim Macartney-Snape and Greg Mortimer summited without oxygen.",
+      "source_keys": ["map", "arnette_2026", "britannica", "aj"]
+    },
+    {
+      "label": "1988 International",
+      "year": 1988,
+      "team": "International",
+      "legend_column": "left",
+      "color_name": "cyan",
+      "color_hex": "#00ffff",
+      "legend_style": "solid",
+      "note": "A small international team climbed the Neverest Buttress on the Kangshung Face toward the South Col. Stephen Venables was the only summitter, giving Britain its first Everest summit.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1995 Japanese",
+      "year": 1995,
+      "team": "Japanese",
+      "legend_column": "left",
+      "color_name": "blue",
+      "color_hex": "#0000ff",
+      "legend_style": "solid",
+      "note": "This Japanese expedition is generally credited with the first complete ascent of the Northeast Ridge. It finished years of work on the true ridge and showed the full route could finally go.",
+      "source_keys": ["map", "arnette_2026"]
+    },
+    {
+      "label": "1996 Russian",
+      "year": 1996,
+      "team": "Russian",
+      "legend_column": "left",
+      "color_name": "purple",
+      "color_hex": "#800080",
+      "legend_style": "solid",
+      "note": "A Russian team opened a steep new couloir between the North and Northeast ridges. Three climbers gained the summit after joining the normal route high above, showing there was still serious new ground on Everest.",
+      "source_keys": ["map", "arnette_2026", "aac"]
+    },
+    {
+      "label": "1953 British (Hillary and Tenzing)",
+      "year": 1953,
+      "team": "British",
+      "legend_column": "right",
+      "color_name": "red",
+      "color_hex": "#ff0000",
+      "legend_style": "solid",
+      "note": "Hillary and Tenzing climbed from the South Col by the Southeast Ridge and reached the summit on 29 May 1953. This became the first confirmed ascent and Everest's standard line from Nepal.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1963 American",
+      "year": 1963,
+      "team": "American",
+      "legend_column": "right",
+      "color_name": "purple",
+      "color_hex": "#800080",
+      "legend_style": "solid",
+      "note": "The U.S. team made the first ascent of the West Ridge and then descended the Southeast Ridge, completing Everest's first major traverse and turning an unclimbed skyline into a classic hard route.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1975 British",
+      "year": 1975,
+      "team": "British",
+      "legend_column": "right",
+      "color_name": "yellow",
+      "color_hex": "#ffcc00",
+      "legend_style": "solid",
+      "note": "Bonington's team solved the Southwest Face by breaking through the Rock Band, then traversing right to the South Summit. Doug Scott and Dougal Haston summited and survived a record high bivouac.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1979 Yugoslav",
+      "year": 1979,
+      "team": "Yugoslav",
+      "legend_column": "right",
+      "color_name": "blue",
+      "color_hex": "#0000ff",
+      "legend_style": "solid",
+      "note": "The Yugoslav team made the first direct ascent of the full West Ridge from the Lho La. Andrej Stremfelj and Jernej Zaplotnik summited, then descended by the Hornbein Couloir.",
+      "source_keys": ["map", "arnette_2026", "aac", "aj"]
+    },
+    {
+      "label": "1980 Polish",
+      "year": 1980,
+      "team": "Polish",
+      "legend_column": "right",
+      "color_name": "bright green",
+      "color_hex": "#00ff00",
+      "legend_style": "solid",
+      "note": "The Poles opened the South Pillar route soon after Everest's first winter ascent. Andrzej Czok and Jerzy Kukuczka reached the top, pushing route making beyond the standard South Col line.",
+      "source_keys": ["map", "arnette_2026", "britannica"]
+    },
+    {
+      "label": "1982 Soviet",
+      "year": 1982,
+      "team": "Soviet",
+      "legend_column": "right",
+      "color_name": "cyan",
+      "color_hex": "#00ffff",
+      "legend_style": "solid",
+      "note": "The first Soviet Everest expedition climbed a hard new line up the left buttress of the Southwest Face, often called the Russian Buttress. The team put 11 climbers on the summit.",
+      "source_keys": ["map", "arnette_2026", "britannica", "aac"]
+    }
+  ]
+}

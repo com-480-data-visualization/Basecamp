@@ -1,0 +1,91 @@
+[
+  {
+    "id": "north-ridge",
+    "name": "North Col / North Ridge / Northeast Ridge",
+    "side": "North (Tibet)",
+    "first_attempt_year": 1921,
+    "first_attempt_by": "British Reconnaissance (Howard-Bury)",
+    "first_summit_year": 1960,
+    "first_summit_by": "Chinese (Wang Fuzhou, Qu Yinhua, Gongbu)",
+    "total_deaths": 74,
+    "death_rate_per_100": 0.89,
+    "description": "The original route. British expeditions explored the North Col from 1921-1938. Tibet closed in 1950; China reopened the north side in 1960. A ladder fixed on the Second Step in 1975 made it more accessible. Today one of two standard commercial routes.",
+    "standard_route": true
+  },
+  {
+    "id": "southeast-ridge",
+    "name": "South Col / Southeast Ridge",
+    "side": "South (Nepal)",
+    "first_attempt_year": 1951,
+    "first_attempt_by": "British Reconnaissance (Shipton)",
+    "first_summit_year": 1953,
+    "first_summit_by": "British (Hillary & Tenzing Norgay)",
+    "total_deaths": 195,
+    "death_rate_per_100": 0.98,
+    "description": "The classic route. Discovered after Nepal opened in 1950 and Tibet closed. Goes through Khumbu Icefall, Western Cwm, Lhotse Face, South Col. First successful ascent of Everest. Today the most popular commercial route.",
+    "standard_route": true
+  },
+  {
+    "id": "west-ridge",
+    "name": "West Ridge",
+    "side": "West",
+    "first_attempt_year": 1963,
+    "first_attempt_by": "American (Hornbein & Unsoeld)",
+    "first_summit_year": 1963,
+    "first_summit_by": "American (Hornbein & Unsoeld)",
+    "total_summits": 19,
+    "total_deaths": 2,
+    "description": "First climbed via the Hornbein Couloir. Hornbein and Unsoeld then descended the Southeast Ridge, completing the first traverse of Everest. Rarely repeated.",
+    "standard_route": false
+  },
+  {
+    "id": "southwest-face",
+    "name": "Southwest Face",
+    "side": "South (Nepal)",
+    "first_attempt_year": 1975,
+    "first_attempt_by": "British (Bonington expedition)",
+    "first_summit_year": 1975,
+    "first_summit_by": "British (Doug Scott & Dougal Haston)",
+    "total_summits": 48,
+    "total_deaths": 2,
+    "description": "A major challenge in the 1970s. Multiple teams failed before Bonington's expedition succeeded. Much harder than the standard routes.",
+    "standard_route": false
+  },
+  {
+    "id": "north-face",
+    "name": "North Face",
+    "side": "North (Tibet)",
+    "first_attempt_year": 1980,
+    "first_attempt_by": "Japanese (Ozaki & Shigehiro)",
+    "first_summit_year": 1980,
+    "first_summit_by": "Japanese (Ozaki & Shigehiro)",
+    "total_summits": 24,
+    "total_deaths": 0,
+    "description": "First full ascent in 1980. In 1986, Loretan and Troillet climbed it in 42 hours without oxygen.",
+    "standard_route": false
+  },
+  {
+    "id": "east-face",
+    "name": "East Face (Kangshung)",
+    "side": "East (Tibet)",
+    "first_attempt_year": 1983,
+    "first_attempt_by": "American (Reichardt, Momb, Buhler)",
+    "first_summit_year": 1983,
+    "first_summit_by": "American (Reichardt, Momb, Buhler)",
+    "total_summits": 12,
+    "total_deaths": 0,
+    "description": "The most remote face. Very few attempts. Approached from the Kangshung Glacier in Tibet.",
+    "standard_route": false
+  },
+  {
+    "id": "south-pillar",
+    "name": "South Pillar",
+    "side": "South (Nepal)",
+    "first_summit_year": 1980,
+    "first_summit_by": "Polish (Andrzej Czok & Jerzy Kukuczka)",
+    "total_summits": 45,
+    "total_deaths": 1,
+    "description": "A variation on the south side. More direct than the standard Southeast Ridge.",
+    "standard_route": false
+  }
+]

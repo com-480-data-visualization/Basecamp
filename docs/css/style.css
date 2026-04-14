@@ -1,0 +1,372 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1a1a1a;
+  background: #f7f5f2;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+/* ── Intro header ── */
+
+.intro {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #1a1a1a;
+  color: #f0ece6;
+}
+
+.intro h1 {
+  font-size: 3.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.intro .subtitle {
+  font-size: 1.15rem;
+  color: #a09a90;
+  max-width: 440px;
+  line-height: 1.7;
+}
+
+/* ── Scrollytelling layout ── */
+
+#scrolly {
+  position: relative;
+  display: flex;
+}
+
+.scroll-text {
+  width: 35%;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.scroll-graphic {
+  width: 60%;
+  margin-left: 5%;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.graphic-container {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graphic-placeholder {
+  position: relative;
+  width: 94%;
+  height: 88%;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.28s ease;
+  overflow: hidden;
+}
+
+.graphic-label {
+  font-size: 1.3rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #999;
+}
+
+/* ── Ch.1 cinematic opening ── */
+
+.ch1-cinematic {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  display: none;
+}
+
+.ch1-cinematic.active {
+  display: block;
+}
+
+.ch1-image-wrap {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 25%;
+  will-change: transform;
+}
+
+.ch1-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ch1-overlay {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+#ch1-text-wide {
+  opacity: 1;
+}
+
+#ch1-text-zoom {
+  opacity: 0;
+}
+
+/* ── Ch.2 conquest ── */
+
+.ch2-conquest {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  display: none;
+  overflow: hidden;
+}
+
+.ch2-map {
+  flex: 0 0 70%;
+  overflow: hidden;
+  background: #f5f3f0;
+  pointer-events: none;
+}
+
+.ch2-map svg {
+  display: block;
+}
+
+.ch2-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  border-left: 1px solid #e5e2dd;
+  background: #faf9f7;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.ch2-panel-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+.ch2-panel-intro {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.ch2-dropdown {
+  position: relative;
+  margin-bottom: 12px;
+  user-select: none;
+}
+
+.ch2-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid #d5d0c8;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.ch2-dropdown-trigger:hover {
+  border-color: #999;
+}
+
+.ch2-dropdown-label {
+  flex: 1;
+}
+
+.ch2-dropdown-arrow {
+  font-size: 10px;
+  color: #999;
+}
+
+.ch2-dropdown-list {
+  display: none;
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d5d0c8;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.ch2-dropdown-list.open {
+  display: block;
+}
+
+.ch2-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ch2-dropdown-option:hover {
+  background: #f5f3f0;
+}
+
+.ch2-route-detail {
+  flex: 1;
+  padding-top: 12px;
+  border-top: 1px solid #e5e2dd;
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.7;
+  overflow-y: auto;
+  font-style: italic;
+}
+
+.ch2-route-detail.has-content {
+  color: #333;
+  font-style: normal;
+}
+
+/* ── Viz container (D3 charts) ── */
+
+.viz-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Steps ── */
+
+.step {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.step:first-child {
+  padding-top: 10vh;
+}
+
+.step-content {
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1.6rem 2rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 4px 4px 0;
+  max-width: 380px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-content h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.01em;
+}
+
+.step-content p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.7;
+}
+
+.step.is-active .step-content {
+  border-left-color: #1a1a1a;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Tooltip (shared) ── */
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid #e5e2dd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+/* ── Closing image ── */
+
+.closing-image {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0 0;
+}
+
+.closing-image img {
+  width: 100%;
+  display: block;
+}
+
+/* ── Footer ── */
+
+footer {
+  text-align: center;
+  padding: 2rem 1rem 3rem;
+  color: #b0a89e;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

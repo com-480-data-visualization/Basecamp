@@ -82,7 +82,14 @@ None of us have used this dataset in our previous courses.
 
 ## Milestone 2 (17th April, 5pm)
 
-**10% of the final grade**
+running locally:
+
+```bash
+cd docs
+python3 -m http.server 8000
+```
+
+then open [http://localhost:8000](http://localhost:8000).
 
 
 ## Milestone 3 (29th May, 5pm)

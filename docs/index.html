@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Price of the Peak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="intro">
+    <h1>The Price of the Peak</h1>
+    <p class="subtitle">The mountain became a product. Products have hidden costs.</p>
+  </header>
+
+  <main>
+    <section id="scrolly">
+      <div class="scroll-text">
+
+        <div class="step" data-chapter="himalayas">
+          <div class="step-content">
+            <h2>The Himalayas</h2>
+            <p>468 peaks. A century of climbing. The highest place on Earth.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="conquest">
+          <div class="step-content">
+            <h2>The Conquest</h2>
+            <p>Starting in 1921, expeditions tried every face of the mountain. It took 32 years, dozens of lives, and routes from all sides before anyone reached the top.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="the-turn">
+          <div class="step-content">
+            <h2>The Turn</h2>
+            <p>Exploration turned into commerce. By 2010, trekking agencies ran 98% of expeditions. More people summit each year. But the death toll stays flat.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="the-cost" data-substep="0">
+          <div class="step-content">
+            <h2>The Cost</h2>
+            <p>957 climbers never came back. Each dot is one death, placed at the altitude where it happened.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="the-cost" data-substep="1">
+          <div class="step-content">
+            <p>Where you die depends on why you're there. Hired staff fall in the icefall and lower camps. Clients collapse near the top.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="the-cost" data-substep="2">
+          <div class="step-content">
+            <p>On Everest, the divide is sharper. 2,400 meters between the typical hired staff death and the typical client death.</p>
+          </div>
+        </div>
+
+        <div class="step" data-chapter="the-cost" data-substep="3">
+          <div class="step-content">
+            <p>Hired staff death rate: 2.0%. Clients: 1.3%. Same mountain, different price.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="scroll-graphic">
+        <div class="graphic-container">
+          <div class="graphic-placeholder" id="graphic">
+            <span class="graphic-label">The Himalayas</span>
+
+            <div class="ch1-cinematic" id="ch1-cinematic">
+              <div class="ch1-image-wrap" id="ch1-image-wrap">
+                <img src="img/himalayas_ch1.jpg" alt="Aerial view of the Himalayan range with Everest" class="ch1-image">
+              </div>
+              <div class="ch1-overlay" id="ch1-text-wide">
+                468 peaks. Over a century of climbing.
+              </div>
+              <div class="ch1-overlay" id="ch1-text-zoom">
+                But one mountain dominates the story.
+              </div>
+            </div>
+
+            <div class="ch2-conquest" id="ch2-conquest"></div>
+
+            <div class="viz-container" id="viz-container"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="closing-image">
+    <img src="img/everest_tents.jpg" alt="Aerial view of Everest base camp tents">
+  </div>
+
+  <footer>
+    <p>Basecamp team, COM-480 Data Visualization </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://unpkg.com/scrollama"></script>
+  <script src="js/viz-growth.js"></script>
+  <script src="js/viz-routes.js"></script>
+  <script src="js/viz-cost.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
