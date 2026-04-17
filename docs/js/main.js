@@ -14,13 +14,7 @@ const vizModules = {
   "the-cost": window.vizCost,
 };
 
-// Ch.1 cinematic elements
-const ch1 = {
-  container: null,
-  imageWrap: null,
-  textWide: null,
-  textZoom: null,
-};
+let ch1Container = null;
 
 const FADE_MS = 280;
 
@@ -40,7 +34,7 @@ function showChapter(chapter, substep, graphic, label) {
     if (activeChapter && vizModules[activeChapter]) {
       vizModules[activeChapter].hide();
     }
-    ch1.container.classList.toggle("active", chapter === "himalayas");
+    ch1Container.classList.toggle("active", chapter === "himalayas");
 
     activeChapter = chapter;
 
@@ -93,11 +87,7 @@ Promise.all([
   DATA.yearly = yearly;
   DATA.routes = routes;
 
-  // Ch.1 cinematic refs
-  ch1.container = document.getElementById("ch1-cinematic");
-  ch1.imageWrap = document.getElementById("ch1-image-wrap");
-  ch1.textWide = document.getElementById("ch1-text-wide");
-  ch1.textZoom = document.getElementById("ch1-text-zoom");
+  ch1Container = document.getElementById("ch1-cinematic");
 
   const vizContainer = document.getElementById("viz-container");
   vizModules["conquest"].init(document.getElementById("ch2-conquest"), routes);
