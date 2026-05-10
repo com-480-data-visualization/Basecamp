@@ -332,6 +332,25 @@ body {
   z-index: 10;
 }
 
+/* ── Closing text ── */
+
+.closing-text {
+  max-width: 640px;
+  margin: 6rem auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.closing-text p {
+  font-size: 1rem;
+  color: #2a2a2a;
+  line-height: 1.8;
+  margin-bottom: 1.4rem;
+}
+
+.closing-text p:last-child {
+  margin-bottom: 0;
+}
+
 /* ── Closing image ── */
 
 .closing-image {
