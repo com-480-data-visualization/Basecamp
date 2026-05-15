@@ -1,148 +1,296 @@
 window.vizRoutes = (function () {
-  let container, routes;
-  let svgPromise;
-  let detailEl = null;
+  let container = null;
+  let routes = null;
+  let routeByLabel = null;
+
+  let mapEl = null;
+  let statusEl = null;
+  let routeItemsByLabel = null;
+  let clearBtn = null;
+  let recordEl = null;
+
+  let everestApi = null;
+  let everestPromise = null;
+  let currentLabel = null;
+  let wantsAnimation = false;
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function hexToRgb(hex) {
+    const value = hex.replace("#", "");
+    const full = value.length === 3
+      ? value.split("").map((ch) => ch + ch).join("")
+      : value;
+    const intValue = parseInt(full, 16);
+    return {
+      r: ((intValue >> 16) & 255) / 255,
+      g: ((intValue >> 8) & 255) / 255,
+      b: (intValue & 255) / 255,
+    };
+  }
+
+  function rgbToHex({ r, g, b }) {
+    const parts = [r, g, b].map((value) => {
+      return Math.round(clamp(value, 0, 1) * 255).toString(16).padStart(2, "0");
+    });
+    return `#${parts.join("")}`;
+  }
+
+  function rgbToHsl({ r, g, b }) {
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    const d = max - min;
+    if (d === 0) return { h: 0, s: 0, l };
+
+    let h;
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+
+    return { h, s: d / (1 - Math.abs(2 * l - 1)), l };
+  }
+
+  function hueToRgb(p, q, t) {
+    let x = t;
+    if (x < 0) x += 1;
+    if (x > 1) x -= 1;
+    if (x < 1 / 6) return p + (q - p) * 6 * x;
+    if (x < 1 / 2) return q;
+    if (x < 2 / 3) return p + (q - p) * (2 / 3 - x) * 6;
+    return p;
+  }
+
+  function hslToRgb({ h, s, l }) {
+    if (s === 0) return { r: l, g: l, b: l };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    return {
+      r: hueToRgb(p, q, h + 1 / 3),
+      g: hueToRgb(p, q, h),
+      b: hueToRgb(p, q, h - 1 / 3),
+    };
+  }
+
+  function routeDisplayColor(color, active = false) {
+    const hsl = rgbToHsl(hexToRgb(color));
+    if (hsl.l < 0.05) return active ? "#2d281f" : "#4a4132";
+
+    const saturation = active ? 0.78 : 0.52;
+    const lightnessScale = active ? 0.88 : 0.72;
+    const lightnessOffset = active ? 0.08 : 0.04;
+    const maxLightness = active ? 0.66 : 0.58;
+
+    return rgbToHex(hslToRgb({
+      h: hsl.h,
+      s: clamp(hsl.s * saturation, 0.18, active ? 0.86 : 0.64),
+      l: clamp(hsl.l * lightnessScale + lightnessOffset, 0.32, maxLightness),
+    }));
+  }
 
   function makeSwatch(color) {
     const s = document.createElement("span");
-    s.style.cssText = `display:inline-block;flex-shrink:0;width:10px;height:10px;border-radius:50%;background:${color};border:1px solid rgba(0,0,0,0.18);`;
+    s.className = "ch2-route-swatch";
+    s.style.background = color;
     return s;
+  }
+
+  function routeName(route) {
+    return route.label.replace(/^\d{4}\s*/, "");
+  }
+
+  function appendText(parent, tag, className, text) {
+    const el = document.createElement(tag);
+    el.className = className;
+    el.textContent = text;
+    parent.appendChild(el);
+    return el;
   }
 
   function init(el, data) {
     container = el;
     routes = data.routes;
-    svgPromise = fetch("img/everest_routes_2.svg").then((r) => r.text());
+    routeByLabel = Object.fromEntries(routes.map((r) => [r.label, r]));
+    buildDOM();
   }
 
-  function show() {
-    if (!container || !routes) return;
+  function buildDOM() {
     container.innerHTML = "";
-    container.style.display = "flex";
-    container.style.flexDirection = "row";
-    container.style.height = "100%";
-    buildContent();
-  }
+    routeItemsByLabel = {};
 
-  function hide() {
-    if (container) {
-      container.innerHTML = "";
-      container.style.display = "none";
-    }
-  }
-
-  async function buildContent() {
-    // Left: map
-    const mapEl = document.createElement("div");
+    mapEl = document.createElement("div");
     mapEl.className = "ch2-map";
     container.appendChild(mapEl);
 
-    // Right: info panel
-    const panelEl = document.createElement("div");
-    panelEl.className = "ch2-panel";
-    container.appendChild(panelEl);
+    statusEl = document.createElement("div");
+    statusEl.className = "ch2-map-status";
+    statusEl.textContent = "Loading terrain…";
+    mapEl.appendChild(statusEl);
 
-    const title = document.createElement("div");
-    title.className = "ch2-panel-title";
-    title.textContent = "Climbing Everest";
-    panelEl.appendChild(title);
+    const indexEl = document.createElement("nav");
+    indexEl.className = "ch2-route-index";
+    indexEl.setAttribute("aria-label", "Everest route index");
+    indexEl.addEventListener("pointerdown", (e) => e.stopPropagation());
+    container.appendChild(indexEl);
 
-    const intro = document.createElement("p");
-    intro.className = "ch2-panel-intro";
-    intro.textContent =
-      "From 1921 to 1996, expeditions approached from every face — north, south, east, west. Each new route was a different answer to the same problem. Select a route to read its story.";
-    panelEl.appendChild(intro);
+    const indexHeader = document.createElement("div");
+    indexHeader.className = "ch2-index-header";
+    indexEl.appendChild(indexHeader);
+
+    appendText(indexHeader, "h3", "ch2-index-title", "Route index");
+    appendText(
+      indexHeader,
+      "p",
+      "ch2-index-intro",
+      "Sixteen major Everest route lines, ordered by first ascent or attempt."
+    );
+
+    const routeList = document.createElement("div");
+    routeList.className = "ch2-route-list";
+    indexEl.appendChild(routeList);
 
     const sorted = [...routes].sort((a, b) => a.year - b.year);
-
-    const dropEl = document.createElement("div");
-    dropEl.className = "ch2-dropdown";
-    panelEl.appendChild(dropEl);
-
-    const triggerSwatch = makeSwatch("transparent");
-    triggerSwatch.style.border = "none";
-    const triggerLabel = document.createElement("span");
-    triggerLabel.className = "ch2-dropdown-label";
-    triggerLabel.textContent = "Select a route\u2026";
-    const triggerArrow = document.createElement("span");
-    triggerArrow.className = "ch2-dropdown-arrow";
-    triggerArrow.textContent = "\u25BE";
-
-    const trigger = document.createElement("div");
-    trigger.className = "ch2-dropdown-trigger";
-    trigger.appendChild(triggerSwatch);
-    trigger.appendChild(triggerLabel);
-    trigger.appendChild(triggerArrow);
-    dropEl.appendChild(trigger);
-
-    const optList = document.createElement("div");
-    optList.className = "ch2-dropdown-list";
-    dropEl.appendChild(optList);
-
-    sorted.forEach((route) => {
-      const opt = document.createElement("div");
-      opt.className = "ch2-dropdown-option";
-      opt.appendChild(makeSwatch(route.color_hex));
-      const lbl = document.createElement("span");
-      lbl.textContent = `${route.year} \u2014 ${route.team}`;
-      opt.appendChild(lbl);
-      opt.addEventListener("click", () => {
-        triggerSwatch.style.background = route.color_hex;
-        triggerSwatch.style.border = "1px solid rgba(0,0,0,0.18)";
-        triggerLabel.textContent = `${route.year} \u2014 ${route.team}`;
-        optList.classList.remove("open");
-        detailEl.innerHTML = `<strong>${route.label}</strong><br><br>${route.note}`;
-        detailEl.classList.add("has-content");
-      });
-      optList.appendChild(opt);
+    sorted.forEach((route, i) => {
+      const btn = document.createElement("button");
+      btn.className = "ch2-route-row";
+      btn.type = "button";
+      btn.setAttribute("aria-pressed", "false");
+      appendText(btn, "span", "ch2-route-number", String(i + 1).padStart(2, "0"));
+      appendText(btn, "span", "ch2-route-year", route.year);
+      const nameWrap = document.createElement("span");
+      nameWrap.className = "ch2-route-name";
+      nameWrap.appendChild(makeSwatch(routeDisplayColor(route.color_hex)));
+      appendText(nameWrap, "span", "ch2-route-label", routeName(route));
+      btn.appendChild(nameWrap);
+      appendText(btn, "span", "ch2-route-state", "");
+      btn.addEventListener("click", () => setSelectedRoute(route.label));
+      routeList.appendChild(btn);
+      routeItemsByLabel[route.label] = btn;
     });
 
-    trigger.addEventListener("click", () => optList.classList.toggle("open"));
-    document.addEventListener("click", (e) => {
-      if (!dropEl.contains(e.target)) optList.classList.remove("open");
+    const panelEl = document.createElement("div");
+    panelEl.className = "ch2-panel";
+    panelEl.addEventListener("pointerdown", (e) => e.stopPropagation());
+    container.appendChild(panelEl);
+
+    const panelHead = document.createElement("div");
+    panelHead.className = "ch2-panel-head";
+    panelEl.appendChild(panelHead);
+    appendText(panelHead, "div", "ch2-panel-kicker", "Selected route");
+
+    clearBtn = document.createElement("button");
+    clearBtn.className = "ch2-clear-btn";
+    clearBtn.type = "button";
+    clearBtn.textContent = "Clear";
+    clearBtn.hidden = true;
+    clearBtn.addEventListener("click", () => setSelectedRoute(null));
+    panelHead.appendChild(clearBtn);
+
+    recordEl = document.createElement("div");
+    recordEl.className = "ch2-route-record";
+    panelEl.appendChild(recordEl);
+
+    mapEl.addEventListener("route-selected", (e) => {
+      setSelectedRoute(e.detail.label);
+    });
+    mapEl.addEventListener("route-deselected", () => {
+      setSelectedRoute(null);
     });
 
-    detailEl = document.createElement("div");
-    detailEl.className = "ch2-route-detail";
-    panelEl.appendChild(detailEl);
-
-    // Load and inject SVG
-    try {
-      const svgText = await svgPromise;
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(svgText, "image/svg+xml");
-
-      // Remove legend layer before extracting svg
-      const legendLayer = doc.getElementById("layer7");
-      if (legendLayer) legendLayer.remove();
-
-      // Belt-and-suspenders: remove any remaining French legend text
-      doc.querySelectorAll("text").forEach((el) => {
-        const t = el.textContent;
-        if (
-          t.includes("Sommet") ||
-          t.includes("Camp de base") ||
-          t.includes("Voies") ||
-          t.includes("ascensions")
-        ) {
-          el.remove();
-        }
-      });
-
-      const svg = doc.querySelector("svg");
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("height", "100%");
-      svg.setAttribute("viewBox", "0 0 1207.5 730");
-      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-      svg.style.pointerEvents = "none";
-
-      mapEl.appendChild(svg);
-    } catch (e) {
-      console.error("Failed to load route map:", e);
-      mapEl.textContent = "Map unavailable.";
-    }
+    setSelectedRoute(null);
   }
 
+  function ensure3D() {
+    if (everestPromise) return everestPromise;
+    if (!window.Everest3D) {
+      console.error("Everest3D module not loaded");
+      statusEl.textContent = "3D terrain unavailable.";
+      everestPromise = Promise.resolve(null);
+      return everestPromise;
+    }
+    everestPromise = window.Everest3D
+      .create(mapEl, { routes })
+      .then((api) => {
+        everestApi = api;
+        if (statusEl && statusEl.parentNode) statusEl.parentNode.removeChild(statusEl);
+        if (currentLabel) api.setSelected(currentLabel);
+        return api;
+      })
+      .catch((err) => {
+        console.error("Failed to init Everest 3D:", err);
+        if (statusEl) {
+          statusEl.textContent = "3D terrain unavailable: " + (err && err.message ? err.message : err);
+        }
+        return null;
+      });
+    return everestPromise;
+  }
+
+  function setSelectedRoute(label) {
+    if (label === currentLabel) {
+      renderSelection(label);
+      return;
+    }
+    currentLabel = label;
+    renderSelection(label);
+    if (everestApi) everestApi.setSelected(label);
+  }
+
+  function renderSelection(label) {
+    const route = label ? routeByLabel[label] : null;
+    for (const [itemLabel, item] of Object.entries(routeItemsByLabel)) {
+      const selected = itemLabel === label;
+      item.classList.toggle("is-selected", selected);
+      item.setAttribute("aria-pressed", selected ? "true" : "false");
+    }
+    clearBtn.hidden = !route;
+    renderRecord(route);
+  }
+
+  function renderRecord(route) {
+    recordEl.replaceChildren();
+
+    if (!route) {
+      appendText(recordEl, "div", "ch2-record-year", "1924-1996");
+      appendText(recordEl, "h3", "ch2-record-title", "Select a route");
+      appendText(
+        recordEl,
+        "p",
+        "ch2-record-note",
+        "Choose a line from the route index or from the mountain."
+      );
+      return;
+    }
+
+    const color = routeDisplayColor(route.color_hex, true);
+    const heading = document.createElement("div");
+    heading.className = "ch2-record-heading";
+    heading.appendChild(makeSwatch(color));
+    appendText(heading, "div", "ch2-record-year", String(route.year));
+    recordEl.appendChild(heading);
+
+    appendText(recordEl, "h3", "ch2-record-title", routeName(route));
+    appendText(recordEl, "p", "ch2-record-note", route.note);
+  }
+
+  function show() {
+    if (!container) return;
+    container.style.display = "flex";
+    wantsAnimation = true;
+    ensure3D().then((api) => {
+      if (!api || !wantsAnimation) return;
+      api.resize();
+      api.start();
+    });
+  }
+
+  function hide() {
+    if (container) container.style.display = "none";
+    wantsAnimation = false;
+    if (everestApi) everestApi.stop();
+  }
 
   return { init, show, hide };
 })();

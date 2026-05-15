@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sources | The Price of the Peak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=sources-gallery-3">
+</head>
+<body class="sources-page">
+  <main class="sources-shell">
+    <a class="sources-back" href="../">The Price of the Peak</a>
+
+    <header class="sources-header">
+      <h1>Sources and Inspiration</h1>
+    </header>
+
+    <div class="sources-list" id="sources-list"></div>
+  </main>
+
+  <script>
+    const sourceEntries = [
+      {
+        title: "Mount Everest model",
+        author: "DamienMansell / Sketchfab",
+        usedFor: "Opening mountain model",
+        image: "../assets/sources/everest-glb-model.jpg",
+        domain: "sketchfab.com",
+        links: [
+          {
+            label: "Source",
+            url: "https://sketchfab.com/3d-models/mount-everest-esri-imagery-overlay-f1b4efcc730a4d31872c73d8cdab97ed"
+          }
+        ]
+      },
+      {
+        title: "Opening scene reference",
+        author: "Maxime Heckel",
+        usedFor: "Visual reference for the opening scene",
+        image: "../assets/sources/maxime-pixel-statue.jpg",
+        domain: "maximeheckel.com",
+        links: [
+          {
+            label: "Reference",
+            url: "https://maximeheckel.com/"
+          },
+          {
+            label: "Author",
+            url: "https://maximeheckel.com/"
+          }
+        ]
+      },
+      {
+        title: "The Himalayas Shaded Relief Map",
+        author: "Jo Hannah Asetre",
+        usedFor: "Reference for the Himalayas map",
+        image: "../assets/sources/himalayas-atlas-reference.jpg",
+        domain: "johannahasetre.myportfolio.com",
+        links: [
+          {
+            label: "Source",
+            url: "https://johannahasetre.myportfolio.com/the-himalayas-shaded-relief-map-1"
+          }
+        ]
+      },
+      {
+        title: "Copernicus DEM GLO-30",
+        author: "Copernicus / ESA / European Union",
+        usedFor: "Everest terrain data",
+        image: "../assets/sources/copernicus-dem.jpg",
+        domain: "dataspace.copernicus.eu",
+        links: [
+          {
+            label: "Source",
+            url: "https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM"
+          }
+        ]
+      },
+      {
+        title: "Comparing the Routes of Everest, 2026 edition",
+        author: "Alan Arnette",
+        usedFor: "Everest route reference",
+        image: "../assets/sources/alan-arnette-everest-routes.jpg",
+        domain: "alanarnette.com",
+        links: [
+          {
+            label: "Source",
+            url: "https://www.alanarnette.com/blog/2026/01/28/comparing-the-routes-of-everest-2026-edition/"
+          }
+        ]
+      },
+      {
+        title: "Himalayan climbing expedition data",
+        author: "The Himalayan Database / TidyTuesday cleaned extract",
+        usedFor: "Data charts and death records",
+        image: "../assets/sources/himalayan-database.jpg",
+        domain: "himalayandatabase.com",
+        links: [
+          {
+            label: "Original database",
+            url: "https://www.himalayandatabase.com/"
+          },
+          {
+            label: "Cleaned data",
+            url: "https://github.com/rfordatascience/tidytuesday/tree/main/data/2020/2020-09-22"
+          }
+        ]
+      },
+      {
+        title: "An Astronaut's View of the Himalayas",
+        author: "NASA Earth Observatory",
+        usedFor: "Final image",
+        image: "../assets/sources/nasa-conclusion-image.jpg",
+        domain: "visibleearth.nasa.gov",
+        links: [
+          {
+            label: "Source",
+            url: "https://visibleearth.nasa.gov/images/144355/an-astronauts-view-of-the-himalayas"
+          }
+        ]
+      }
+    ];
+
+    const list = document.getElementById("sources-list");
+
+    sourceEntries.forEach((entry) => {
+      const row = document.createElement("article");
+      row.className = "source-row";
+
+      const media = document.createElement("div");
+      media.className = "source-media";
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "source-placeholder";
+      placeholder.innerHTML = `
+        <span>Source</span>
+        <em>${entry.domain}</em>
+      `;
+
+      const image = document.createElement("img");
+      image.src = entry.image;
+      image.alt = "";
+      image.loading = "lazy";
+      image.onerror = () => {
+        image.remove();
+      };
+
+      media.append(placeholder, image);
+
+      const content = document.createElement("div");
+      content.className = "source-content";
+      content.innerHTML = `
+        <h2>${entry.title}</h2>
+        <p class="source-author">${entry.author}</p>
+        <p class="source-used">${entry.usedFor}</p>
+        <p class="source-links">
+          ${entry.links.map((link) => `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label} &#8599;</a>`).join(" <span aria-hidden=\"true\">/</span> ")}
+        </p>
+      `;
+
+      row.append(media, content);
+      list.appendChild(row);
+    });
+  </script>
+</body>
+</html>

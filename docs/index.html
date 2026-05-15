@@ -7,68 +7,82 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=hero-loading-2">
 </head>
 <body>
 
-  <header class="intro">
-    <h1>The Price of the Peak</h1>
-    <p class="subtitle">The mountain became a product. Products have hidden costs.</p>
+  <header class="intro hero-led section-plate" id="hero-led">
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-led-canvas" id="hero-led-canvas" data-model-src="figure/mount-everest-esri-imagery-overlay/source/800054a8-0006-fc00-b63f-84710c7967bb.glb">
+        <img class="hero-led-fallback" src="figure/everest_standalone.png" alt="">
+      </div>
+      <div class="hero-led-loading" aria-hidden="true">
+        <span></span>
+        <em>Loading terrain</em>
+      </div>
+      <div class="hero-drag-hint">Drag to rotate</div>
+    </div>
+    <div class="intro-inner hero-copy">
+      <h1>The Price of the Peak</h1>
+      <p class="subtitle">Exploration, commercial growth, and who bears the risk in Himalayan climbing now.</p>
+    </div>
   </header>
 
   <main>
-    <section id="scrolly">
+    <section id="scrolly" class="editorial-grid">
       <div class="scroll-text">
 
-        <div class="step" data-chapter="himalayas">
+        <div class="step section-atlas" data-chapter="himalayas" data-label="01">
           <div class="step-content">
             <h2>The Himalayas</h2>
-            <p>The Himalayas hold the highest ground on Earth. People have come to climb them for more than a century, and someone has been writing down what happened. We know who walked in on every expedition, who reached the top, who came back, and who did not.</p>
+            <p>The Himalayan Database records expeditions to Nepal's major Himalayan peaks from 1905 to 2019. It lists teams, member roles, summit outcomes, deaths, and reported death altitudes across 468 peaks.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="conquest">
+        <div class="step section-map-table" data-chapter="conquest" data-label="02">
           <div class="step-content">
             <h2>The Conquest</h2>
-            <p>The British walked toward Everest in 1921 looking for a way up. For three decades expeditions returned, first from the Tibetan side and then from Nepal, attempting ridges and faces no team had climbed. Hillary and Tenzing reached the summit in May 1953. Each colored line on the map is one of sixteen major routes climbers used between 1924 and 1996.</p>
+            <p>In 1921, a British reconnaissance expedition approached Everest from Tibet and began mapping possible routes. The map follows sixteen major Everest lines used or attempted between 1924 and 1996, including the 1953 Southeast Ridge route climbed by Edmund Hillary and Tenzing Norgay on a British-led expedition from Nepal.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-turn" data-substep="0">
+        <div class="step section-turn-transition" data-chapter="turn-transition" aria-hidden="true"></div>
+
+        <div class="step section-data-wall" data-chapter="the-turn" data-substep="0" data-label="03">
           <div class="step-content">
             <h2>The Turn</h2>
-            <p>In the 1970s, fewer than five percent of Himalayan expeditions used a trekking agency. By the 2010s the share was above 98 percent, and the number of expeditions each year had grown roughly tenfold.</p>
+            <p>In the 1970s, 13 of 361 expeditions in the data listed a trekking agency. From 2010 to 2017, 2,933 of 2,979 did. Over the same span, average annual expeditions rose from 36 to 372.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-turn" data-substep="1">
+        <div class="step section-data-wall" data-chapter="the-turn" data-substep="1" data-label="03 The Turn">
           <div class="step-content">
-            <p>The death rate did not move with the growth. Climbers died at roughly the same rate in the 2010s as in the 1970s. The dashed lines mark the worst seasons: the 1996 Everest storm, the 2014 icefall avalanche, and the 2015 earthquake.</p>
+            <p>Deaths did not rise at the same pace as expeditions. The death rate across all expedition members was 4.18 percent in the 1970s and 0.85 percent from 2010 to 2017. The dashed lines mark selected disaster years: 1996, 2014, and 2015.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-cost" data-substep="0">
+        <div class="step section-register" data-chapter="the-cost" data-substep="0" data-label="04">
           <div class="step-content">
             <h2>The Cost</h2>
-            <p>957 climbers died on a Himalayan peak above 5,000 meters. Each dot is one of them, placed at the altitude where they died.</p>
+            <p>The register includes 957 recorded deaths with a reported death altitude at or above 5,000 meters. Each dot is one person, placed at the altitude where they died.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-cost" data-substep="1">
+        <div class="step section-register" data-chapter="the-cost" data-substep="1" data-label="04 The Cost">
           <div class="step-content">
-            <p>We split the dots by role, orange for hired staff and blue for clients. Hired staff die lower on the mountain, with a median of 6,400 meters. Clients die higher, with a median of 7,000.</p>
+            <p>Split by role, hired staff deaths sit lower than client deaths. Across all peaks, the median is 6,400 meters for hired staff and 7,000 meters for clients.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-cost" data-substep="2">
+        <div class="step section-register" data-chapter="the-cost" data-substep="2" data-label="04 The Cost">
           <div class="step-content">
-            <p>On Everest alone, the gap grows. The median hired-staff death sits at 5,800 meters, near the icefall and the lower camps. The median client death is at 8,200 meters, above the South Col. The two are 2,400 vertical meters apart.</p>
+            <p>On Everest, the chart includes 299 deaths at or above 5,000 meters. The median hired-staff death is at 5,800 meters. The median client death is at 8,200 meters.</p>
           </div>
         </div>
 
-        <div class="step" data-chapter="the-cost" data-substep="3">
+        <div class="step section-register" data-chapter="the-cost" data-substep="3" data-label="04 The Cost">
           <div class="step-content">
-            <p>In the full database, 318 of 15,731 hired staff died on Himalayan expeditions, a death rate of two percent. Among 60,788 clients on those same mountains, 788 died, a rate of 1.3 percent. Hired staff die more often.</p>
+            <p>Those Everest medians are 2,400 vertical meters apart. The gap measures where deaths occurred, not how dangerous each role was by itself.</p>
           </div>
         </div>
 
@@ -79,12 +93,14 @@
           <div class="graphic-placeholder" id="graphic">
             <span class="graphic-label">The Himalayas</span>
 
-            <div class="ch1-cinematic" id="ch1-cinematic">
-              <img src="img/himalayas_ch1.jpg" alt="Aerial view of the Himalayan range with Everest" class="ch1-image">
-              <div class="ch1-overlay">
-                468 peaks. Over a century of climbing.
+            <figure class="ch1-atlas" id="ch1-atlas">
+              <div class="ch1-atlas-plate">
+                <img src="img/himalayas_atlas_placeholder.jpg" alt="Relief map of the Himalayan region" class="ch1-atlas-image">
               </div>
-            </div>
+              <div class="ch1-overlay">
+                Himalayan Database, expedition records, 1905-2019
+              </div>
+            </figure>
 
             <div class="ch2-conquest" id="ch2-conquest"></div>
 
@@ -95,25 +111,44 @@
     </section>
   </main>
 
-  <section class="closing-text">
-    <p>For most of the twentieth century, going up a Himalayan peak was a project of national pride, sponsored by states and alpine clubs and attempted by a few dozen people a year. By the 2010s it had become a service that an agency would sell, with hired staff fixing the route and carrying the loads while a client walked through the day's program. The geography stayed the same while the economy around it changed.</p>
-    <p>Most of the people doing the rope-fixing and the load-carrying are Nepali. They die in the icefall and the lower camps, in the parts of the mountain they cross over and over to make a single client's summit possible. The clients who hire them die higher up, near the top, and less often.</p>
-    <p>The Himalayan Database stops in 2019. From 1905 to that year, climbing the highest peaks on Earth went from a national project to a paid service, and the people most likely to die on the way up were the ones being paid to make the climb safer for someone else.</p>
+  <section class="closing-transition" aria-hidden="true"></section>
+
+  <section class="closing-text section-conclusion" aria-labelledby="conclusion-title">
+    <div class="closing-copy">
+      <h2 class="closing-kicker" id="conclusion-title">Conclusion</h2>
+      <p>For most of the twentieth century, going up a Himalayan peak was a project of national pride, sponsored by states and alpine clubs and attempted by a few dozen people a year. By the 2010s it had become a service that an agency would sell, with hired staff fixing the route and carrying the loads while a client walked through the day's program. The geography stayed the same while the economy around it changed.</p>
+      <p>Most of the people doing the rope-fixing and the load-carrying are Nepali. They die in the icefall and the lower camps, in the parts of the mountain they cross over and over to make a single client's summit possible. The clients who hire them die higher up, near the top, and less often.</p>
+      <p>The Himalayan Database data used here stops at 2019. From 1905 to that year, climbing the highest peaks on Earth went from a national project to a paid service, and the people most likely to die on the way up were the ones being paid to make the climb safer for someone else.</p>
+    </div>
   </section>
 
   <div class="closing-image">
-    <img src="img/everest_tents.jpg" alt="Aerial view of Everest base camp tents">
+    <img id="closing-image-plate" alt="Aerial view of the Himalayan mountain range, surrounding plateau, and upper atmosphere.">
   </div>
 
   <footer>
-    <p>Basecamp team, COM-480 Data Visualization </p>
+    <p class="footer-sources"><a href="sources/">Sources and Inspiration <span aria-hidden="true">↗</span></a></p>
+    <p>Basecamp team, COM-480 Data Visualization</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://unpkg.com/scrollama"></script>
-  <script src="js/viz-growth.js"></script>
-  <script src="js/viz-routes.js"></script>
-  <script src="js/viz-cost.js"></script>
-  <script src="js/main.js"></script>
+  <!-- upng keeps the heightmap at 16-bit precision -->
+  <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
+  <script src="https://unpkg.com/upng-js@2.1.0/UPNG.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.184.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/hero-led.js?v=hero-loading-2"></script>
+  <script type="module" src="js/everest3d.js?v=conquest-click-1"></script>
+  <script src="js/viz-growth.js?v=text-polish-1"></script>
+  <script src="js/viz-routes.js?v=conquest-interaction-2"></script>
+  <script src="js/viz-cost.js?v=cost-register-10"></script>
+  <script src="js/main.js?v=route-notes-1"></script>
 </body>
 </html>

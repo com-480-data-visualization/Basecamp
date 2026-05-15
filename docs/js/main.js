@@ -1,10 +1,12 @@
 const CHAPTERS = {
   himalayas: "The Himalayas",
   conquest: "The Conquest",
+  "turn-transition": "",
   "the-turn": "The Turn",
   "the-cost": "The Cost",
 };
 
+const FINAL_IMAGE_SRC = "img/himalayas_space_view.jpg";
 const DATA = {};
 let activeChapter = null;
 
@@ -14,37 +16,45 @@ const vizModules = {
   "the-cost": window.vizCost,
 };
 
-let ch1Container = null;
+let ch1Atlas = null;
 
 const FADE_MS = 280;
+let chapterTransitionTimer = null;
+let chapterTransitionId = 0;
+
+function isPaperChartChapter(chapter) {
+  return chapter === "the-turn" || chapter === "the-cost";
+}
 
 function showChapter(chapter, substep, graphic, label) {
-  if (chapter === activeChapter) {
-    // Same chapter, different substep — just update in place
+  if (chapter === activeChapter && !chapterTransitionTimer) {
     if (vizModules[chapter] && vizModules[chapter].update) {
       vizModules[chapter].update(substep);
     }
     return;
   }
 
-  graphic.style.opacity = "0";
+  const transitionId = ++chapterTransitionId;
+  if (chapterTransitionTimer) {
+    clearTimeout(chapterTransitionTimer);
+    chapterTransitionTimer = null;
+  }
 
-  setTimeout(() => {
-    // hide previous
+  function commitChapter() {
+    if (transitionId !== chapterTransitionId) return;
+
     if (activeChapter && vizModules[activeChapter]) {
       vizModules[activeChapter].hide();
     }
-    ch1Container.classList.toggle("active", chapter === "himalayas");
+    ch1Atlas.classList.toggle("active", chapter === "himalayas");
 
     activeChapter = chapter;
 
-    // update graphic background and label
     graphic.dataset.active = chapter;
-    const hasVisual = vizModules[chapter] || chapter === "himalayas" || chapter === "conquest";
+    const hasVisual = vizModules[chapter] || chapter === "himalayas" || chapter === "conquest" || chapter === "turn-transition";
     label.style.display = hasVisual ? "none" : "";
     label.textContent = CHAPTERS[chapter];
 
-    // Enable pointer-events on viz-container only when D3 charts are active
     const vizCont = document.getElementById("viz-container");
     vizCont.style.pointerEvents = vizModules[chapter] && chapter !== "conquest" ? "auto" : "none";
 
@@ -53,7 +63,21 @@ function showChapter(chapter, substep, graphic, label) {
     }
 
     graphic.style.opacity = "1";
-  }, FADE_MS);
+    chapterTransitionTimer = null;
+  }
+
+  if (activeChapter === null) {
+    commitChapter();
+    return;
+  }
+
+  if (isPaperChartChapter(activeChapter) && isPaperChartChapter(chapter)) {
+    commitChapter();
+    return;
+  }
+
+  graphic.style.opacity = "0";
+  chapterTransitionTimer = setTimeout(commitChapter, FADE_MS);
 }
 
 function initScrollama() {
@@ -78,16 +102,25 @@ function initScrollama() {
   window.addEventListener("resize", scroller.resize);
 }
 
+function initFinalImagePlate() {
+  const image = document.getElementById("closing-image-plate");
+  if (image) {
+    image.src = FINAL_IMAGE_SRC;
+  }
+}
+
+initFinalImagePlate();
+
 Promise.all([
   d3.json("data/deaths.json"),
   d3.json("data/yearly_stats.json"),
-  d3.json("data/routes_2.json"),
+  d3.json("data/routes_2.json?v=route-notes-1"),
 ]).then(([deaths, yearly, routes]) => {
   DATA.deaths = deaths;
   DATA.yearly = yearly;
   DATA.routes = routes;
 
-  ch1Container = document.getElementById("ch1-cinematic");
+  ch1Atlas = document.getElementById("ch1-atlas");
 
   const vizContainer = document.getElementById("viz-container");
   vizModules["conquest"].init(document.getElementById("ch2-conquest"), routes);
