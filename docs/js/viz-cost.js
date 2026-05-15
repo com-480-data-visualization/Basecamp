@@ -424,8 +424,13 @@ window.vizCost = (function () {
       .text((d) => d3.format(",d")(d.value) + " m")
       .transition()
       .duration(duration)
-      .attr("x", (d) => roleCenter(d.role) + lineHalf + 9)
+      .attr("x", (d) => (
+        d.role === "hired"
+          ? roleCenter(d.role) - lineHalf - 9
+          : roleCenter(d.role) + lineHalf + 9
+      ))
       .attr("y", (d) => yScale(d.value) + 4)
+      .attr("text-anchor", (d) => (d.role === "hired" ? "end" : "start"))
       .attr("fill", (d) => d.color);
 
     if (fadeIn) {
