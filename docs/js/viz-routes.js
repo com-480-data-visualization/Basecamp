@@ -202,16 +202,26 @@ window.vizRoutes = (function () {
     setSelectedRoute(null);
   }
 
+  function waitForEverest3D(timeoutMs = 8000) {
+    if (window.Everest3D) return Promise.resolve(window.Everest3D);
+    return new Promise((resolve, reject) => {
+      const start = performance.now();
+      const tick = () => {
+        if (window.Everest3D) { resolve(window.Everest3D); return; }
+        if (performance.now() - start > timeoutMs) {
+          reject(new Error("Everest3D module did not load in time"));
+          return;
+        }
+        setTimeout(tick, 50);
+      };
+      tick();
+    });
+  }
+
   function ensure3D() {
     if (everestPromise) return everestPromise;
-    if (!window.Everest3D) {
-      console.error("Everest3D module not loaded");
-      statusEl.textContent = "3D terrain unavailable.";
-      everestPromise = Promise.resolve(null);
-      return everestPromise;
-    }
-    everestPromise = window.Everest3D
-      .create(mapEl, { routes })
+    everestPromise = waitForEverest3D()
+      .then((mod) => mod.create(mapEl, { routes }))
       .then((api) => {
         everestApi = api;
         if (statusEl && statusEl.parentNode) statusEl.parentNode.removeChild(statusEl);

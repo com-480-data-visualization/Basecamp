@@ -19,6 +19,7 @@ const ELEV_MAX = 8737;
 const GROUND_W = 15000;
 const GROUND_H = 15000;
 const SUBDIVISION = 2;
+const BORDER_TAPER_PIXELS = 55;
 
 const SNOW_BAND_LOW = 5500;
 const SNOW_BAND_HIGH = 6000;
@@ -162,7 +163,9 @@ function buildTerrain(elev) {
       const e11 = elev[row1 + u0 + 1];
       const e = (e00 * (1 - fu) + e10 * fu) * (1 - fv)
               + (e01 * (1 - fu) + e11 * fu) * fv;
-      pos.setZ(r * meshW + c, e);
+      const distEdge = Math.min(u, WIDTH_PX - 1 - u, v, HEIGHT_PX - 1 - v);
+      const taper = smoothstep(0, BORDER_TAPER_PIXELS, distEdge);
+      pos.setZ(r * meshW + c, ELEV_MIN + (e - ELEV_MIN) * taper);
     }
   }
   // keep the mesh transform clean
@@ -550,8 +553,12 @@ async function create(container, { routes }) {
   const terrain = buildTerrain(elev);
   scene.add(terrain);
 
+  const volClouds = window.Clouds.setupVolumetricClouds(renderer, camera, sun.position);
+
+  // routes live in a separate scene so they overlay on top of the cloud composite
   const routesGroup = new THREE.Group();
-  scene.add(routesGroup);
+  const routesScene = new THREE.Scene();
+  routesScene.add(routesGroup);
 
   const raycaster = new THREE.Raycaster();
   raycaster.params.Line2 = { threshold: RAYCAST_THRESHOLD_PX };
@@ -666,9 +673,12 @@ async function create(container, { routes }) {
 
   let selectedLabel = null;
   let hoveredLabel = null;
+  let cloudVisibility = 1;
+  let cloudVisibilityTarget = 1;
 
   function applyHighlights() {
     const any = selectedLabel !== null || hoveredLabel !== null;
+    cloudVisibilityTarget = any ? 0 : 1;
     for (const [label, meshes] of Object.entries(meshesByLabel)) {
       const emphasized = label === selectedLabel || label === hoveredLabel;
       const lw = emphasized ? HOVER_LINE_WIDTH : LINE_WIDTH;
@@ -765,6 +775,8 @@ async function create(container, { routes }) {
     labelRenderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    const buf = renderer.getDrawingBufferSize(new THREE.Vector2());
+    volClouds.resize(buf.x, buf.y);
     for (const meshes of Object.values(meshesByLabel)) {
       for (const m of meshes) m.material.resolution.set(w, h);
     }
@@ -779,8 +791,31 @@ async function create(container, { routes }) {
   let rafId = null;
   function tick() {
     controls.update();
+    camera.updateMatrixWorld();
     compass.style.transform = `rotate(${controls.getAzimuthalAngle()}rad)`;
+
+    const u = volClouds.cloudMaterial.uniforms;
+    u.uTime.value = performance.now() * 0.001;
+    u.uCameraPos.value.copy(camera.position);
+    u.uCameraNear.value = camera.near;
+    u.uCameraFar.value = camera.far;
+    u.uInvProj.value.copy(camera.projectionMatrixInverse);
+    u.uInvView.value.copy(camera.matrixWorld);
+    cloudVisibility += (cloudVisibilityTarget - cloudVisibility) * 0.12;
+    u.uCloudAlphaScale.value = cloudVisibility;
+
+    renderer.setRenderTarget(volClouds.sceneRT);
     renderer.render(scene, camera);
+    renderer.setRenderTarget(volClouds.cloudRT);
+    renderer.render(volClouds.cloudScene, volClouds.cloudCamera);
+    renderer.setRenderTarget(null);
+    renderer.render(volClouds.compositeScene, volClouds.compositeCamera);
+
+    // routes drawn on top of the cloud composite so clouds don't mute them
+    renderer.autoClear = false;
+    renderer.render(routesScene, camera);
+    renderer.autoClear = true;
+
     labelRenderer.render(scene, camera);
     rafId = requestAnimationFrame(tick);
   }
