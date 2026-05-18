@@ -596,8 +596,15 @@ svg text,
   background: rgba(16, 19, 17, 0.28);
   border: 1px solid rgba(243, 239, 231, 0.2);
   box-shadow: none;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 6;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.ev3-compass:hover {
+  background: rgba(16, 19, 17, 0.45);
+  border-color: rgba(243, 239, 231, 0.4);
+  transform: scale(1.06);
 }
 
 .ev3-compass::before,

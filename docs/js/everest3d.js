@@ -676,6 +676,11 @@ async function create(container, { routes }) {
   let cloudVisibility = 1;
   let cloudVisibilityTarget = 1;
 
+  const HOME_CAMERA_POS = summitTarget.clone().add(CAMERA_START_OFFSET);
+  const HOME_TARGET = summitTarget.clone();
+  const RESET_DURATION_MS = 700;
+  let resetAnim = null;
+
   function applyHighlights() {
     const any = selectedLabel !== null || hoveredLabel !== null;
     cloudVisibilityTarget = any ? 0 : 1;
@@ -752,11 +757,23 @@ async function create(container, { routes }) {
   const compass = document.createElement("div");
   compass.className = "ev3-compass";
   compass.innerHTML = '<div class="ev3-compass-arrow"></div><div class="ev3-compass-n">N</div>';
+  compass.style.cursor = "pointer";
+  compass.addEventListener("pointerdown", (e) => e.stopPropagation());
+  compass.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (camera.position.distanceTo(HOME_CAMERA_POS) < 1 &&
+        controls.target.distanceTo(HOME_TARGET) < 1) return;
+    resetAnim = {
+      start: performance.now(),
+      fromPos: camera.position.clone(),
+      fromTarget: controls.target.clone(),
+    };
+  });
   container.appendChild(compass);
 
   const hint = document.createElement("div");
   hint.className = "ev3-hint";
-  hint.innerHTML = "<span>Drag to rotate.</span><span>Click routes to explore.</span>";
+  hint.innerHTML = "<span>Drag to rotate.</span><span>Click routes to explore.</span><span>Click compass to recenter.</span>";
   container.appendChild(hint);
   let hintDismissed = false;
   function dismissHint() {
@@ -790,6 +807,13 @@ async function create(container, { routes }) {
   let running = false;
   let rafId = null;
   function tick() {
+    if (resetAnim) {
+      const t = Math.min(1, (performance.now() - resetAnim.start) / RESET_DURATION_MS);
+      const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      camera.position.lerpVectors(resetAnim.fromPos, HOME_CAMERA_POS, e);
+      controls.target.lerpVectors(resetAnim.fromTarget, HOME_TARGET, e);
+      if (t >= 1) resetAnim = null;
+    }
     controls.update();
     camera.updateMatrixWorld();
     compass.style.transform = `rotate(${controls.getAzimuthalAngle()}rad)`;

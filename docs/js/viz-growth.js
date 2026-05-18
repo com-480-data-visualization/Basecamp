@@ -131,7 +131,7 @@ window.vizGrowth = (function () {
   }
 
   function drawChart(panels) {
-    panels.forEach((panel) => {
+    const drawn = panels.map((panel) => {
       const plotNode = panel.plotNode;
       const width = plotNode.clientWidth || 320;
       const height = plotNode.clientHeight || 120;
@@ -158,11 +158,14 @@ window.vizGrowth = (function () {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       const x = d3.scaleLinear().domain([YEAR_MIN, YEAR_MAX]).range([0, chartW]);
-      drawPanel(group, panel, x, chartW, chartH, {
+      const { y, values } = drawPanel(group, panel, x, chartW, chartH, {
         compact,
         isLast: panel.isLast,
       });
+      const hoverApi = createHoverLayer(group, panel, x, y, chartW, chartH, compact);
+      return { group, panel, x, y, values, width: chartW, height: chartH, hoverApi };
     });
+    attachPanelHover(drawn);
   }
 
   function makePanels() {
@@ -179,6 +182,7 @@ window.vizGrowth = (function () {
         fill: COLORS.agencyFill,
         type: "area",
         tickFormat: (d) => d3.format(".0f")(d) + "%",
+        valueFormat: formatPct,
         directLabel: formatPct(last.agencyPct) + " in 2017",
       },
       {
@@ -190,6 +194,7 @@ window.vizGrowth = (function () {
         color: COLORS.expedition,
         type: "line",
         tickFormat: d3.format("d"),
+        valueFormat: d3.format("d"),
         directLabel: "about 10x since the 1970s",
       },
       {
@@ -202,6 +207,7 @@ window.vizGrowth = (function () {
         type: "bars",
         opacity: 0.5,
         tickFormat: d3.format("d"),
+        valueFormat: d3.format("d"),
         directLabel: "disaster years",
       },
       {
@@ -213,6 +219,7 @@ window.vizGrowth = (function () {
         color: COLORS.rate,
         type: "line",
         tickFormat: (d) => d3.format(".0f")(d) + "%",
+        valueFormat: formatPct,
         directLabel: "rate fell by the 2010s",
       },
     ];
@@ -295,6 +302,104 @@ window.vizGrowth = (function () {
           sel.selectAll(".tick text").attr("fill", COLORS.muted);
         });
     }
+
+    return { y, values };
+  }
+
+  function createHoverLayer(g, panel, x, y, width, height, compact) {
+    const layer = g.append("g")
+      .attr("class", "turn-hover")
+      .style("display", "none")
+      .style("pointer-events", "none");
+
+    const guide = layer.append("line")
+      .attr("class", "turn-hover-line")
+      .attr("y1", 0)
+      .attr("y2", height)
+      .attr("stroke", COLORS.ink)
+      .attr("stroke-opacity", 0.45)
+      .attr("stroke-width", 1);
+
+    const dot = layer.append("circle")
+      .attr("class", "turn-hover-dot")
+      .attr("r", 3.5)
+      .attr("fill", panel.color)
+      .attr("stroke", "#f7f1e4")
+      .attr("stroke-width", 1.5);
+
+    const labelGroup = layer.append("g").attr("class", "turn-hover-label");
+    const labelBg = labelGroup.append("rect")
+      .attr("fill", "rgba(28, 26, 22, 0.94)")
+      .attr("rx", 3);
+    const yearText = labelGroup.append("text")
+      .attr("class", "turn-hover-year")
+      .attr("fill", "#cfc6ad")
+      .attr("font-size", compact ? 9 : 10)
+      .attr("font-family", "Inter, system-ui, sans-serif")
+      .attr("dominant-baseline", "hanging");
+    const valueText = labelGroup.append("text")
+      .attr("class", "turn-hover-value")
+      .attr("fill", "#f3efe7")
+      .attr("font-size", compact ? 11 : 12)
+      .attr("font-weight", 600)
+      .attr("font-family", "Inter, system-ui, sans-serif")
+      .attr("dominant-baseline", "hanging");
+
+    return {
+      show(d) {
+        const px = x(d.year);
+        const py = y(panel.value(d));
+        layer.style("display", null);
+        guide.attr("x1", px).attr("x2", px);
+        dot.attr("cx", px).attr("cy", py);
+        const fmt = (panel.valueFormat || panel.tickFormat)(panel.value(d));
+        const padX = 6;
+        const padY = 4;
+        const lineGap = 2;
+        yearText.attr("x", padX).attr("y", padY).text(d.year);
+        const yearBox = yearText.node().getBBox();
+        valueText.attr("x", padX).attr("y", padY + yearBox.height + lineGap).text(fmt);
+        const valueBox = valueText.node().getBBox();
+        const labelW = Math.max(yearBox.width, valueBox.width) + padX * 2;
+        const labelH = padY * 2 + yearBox.height + lineGap + valueBox.height;
+        const flipX = px + 10 + labelW > width;
+        let tx = flipX ? px - 10 - labelW : px + 10;
+        tx = Math.max(0, Math.min(width - labelW, tx));
+        const ty = Math.max(0, Math.min(height - labelH, py - labelH / 2));
+        labelGroup.attr("transform", `translate(${tx}, ${ty})`);
+        labelBg.attr("x", 0).attr("y", 0).attr("width", labelW).attr("height", labelH);
+      },
+      hide() {
+        layer.style("display", "none");
+      },
+    };
+  }
+
+  function attachPanelHover(drawn) {
+    const bisect = d3.bisector((d) => d.year).left;
+
+    drawn.forEach((d) => {
+      const overlay = d.group.append("rect")
+        .attr("class", "turn-hover-overlay")
+        .attr("width", d.width)
+        .attr("height", d.height)
+        .attr("fill", "transparent")
+        .style("pointer-events", "all")
+        .style("cursor", "crosshair");
+      overlay
+        .on("pointermove", function (event) {
+          const [mx] = d3.pointer(event, this);
+          const year = d.x.invert(mx);
+          const i = bisect(d.values, year);
+          const left = d.values[i - 1];
+          const right = d.values[i];
+          const nearest = !left ? right
+            : !right ? left
+            : Math.abs(year - left.year) <= Math.abs(year - right.year) ? left : right;
+          if (nearest) d.hoverApi.show(nearest);
+        })
+        .on("pointerleave", () => d.hoverApi.hide());
+    });
   }
 
   function drawEventLines(g, x, width, height) {
