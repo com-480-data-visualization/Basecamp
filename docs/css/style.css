@@ -2146,3 +2146,11 @@ footer a:focus-visible {
     transition: none;
   }
 }
+
+.section-demographics .step-content {
+  color: #4f493f;
+}
+
+.section-demographics .step-content h2 {
+  color: var(--ink);
+}
