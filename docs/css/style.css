@@ -281,16 +281,21 @@ svg text,
   align-items: flex-start;
   background:
     linear-gradient(90deg, rgba(8, 11, 16, 0.1), rgba(8, 11, 16, 0.02) 38%, transparent 72%),
+    /* The dark-to-paper handoff is anchored in vh (top stops = the original
+       percentages x the ~855vh the page was tuned for) so it stays locked to the
+       conquest / The Turn boundary (~303vh) regardless of how many paper sections
+       follow. The lower stops are anchored to the bottom, so every paper section
+       stays bright and the ease into the closing happens only in the last 40vh. */
     linear-gradient(180deg,
-      var(--night) 0%,
-      var(--night) 9%,
-      #1a242b 12%,
-      #263945 16%,
-      #2d424e 29%,
-      #3c4c52 32%,
-      var(--paper-deep) 36%,
-      var(--paper) 39%,
-      var(--paper) 62%,
+      var(--night) 0,
+      var(--night) 77vh,
+      #1a242b 103vh,
+      #263945 137vh,
+      #2d424e 248vh,
+      #3c4c52 274vh,
+      var(--paper-deep) 308vh,
+      var(--paper) 333vh,
+      var(--paper) calc(100% - 40vh),
       var(--paper-deep) 100%);
 }
 
@@ -383,7 +388,8 @@ svg text,
   border-color: var(--rule);
 }
 
-.graphic-placeholder[data-active="the-cost"] {
+.graphic-placeholder[data-active="the-cost"],
+.graphic-placeholder[data-active="the-commercial"] {
   height: min(88vh, 900px);
   background:
     linear-gradient(180deg, rgba(248, 245, 238, 0.98), rgba(244, 241, 234, 0.98) 62%, rgba(233, 225, 211, 0.9)),
@@ -923,6 +929,21 @@ svg text,
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-ui);
+}
+
+/* Section 5 is entered via an instant paper-to-paper swap (The Cost -> The
+   Business), so its wall fades itself in to match The Cost's entrance instead of
+   popping. Scoped to the commercial wall; The Turn's wall is unaffected because
+   it arrives through the graphic crossfade. */
+.turn-wall.commercial-wall {
+  opacity: 0;
+  transform: translateY(0.35rem);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.turn-wall.commercial-wall.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .turn-wall-body {

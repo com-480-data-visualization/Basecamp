@@ -4,6 +4,7 @@ const CHAPTERS = {
   "turn-transition": "",
   "the-turn": "The Turn",
   "the-cost": "The Cost",
+  "the-commercial": "The Business",
 };
 
 const FINAL_IMAGE_SRC = "img/himalayas_space_view.jpg";
@@ -14,6 +15,7 @@ const vizModules = {
   conquest: window.vizRoutes,
   "the-turn": window.vizGrowth,
   "the-cost": window.vizCost,
+  "the-commercial": window.vizCommercial,
 };
 
 let ch1Atlas = null;
@@ -23,7 +25,7 @@ let chapterTransitionTimer = null;
 let chapterTransitionId = 0;
 
 function isPaperChartChapter(chapter) {
-  return chapter === "the-turn" || chapter === "the-cost";
+  return chapter === "the-turn" || chapter === "the-cost" || chapter === "the-commercial";
 }
 
 function showChapter(chapter, substep, graphic, label) {
@@ -115,10 +117,12 @@ Promise.all([
   d3.json("data/deaths.json"),
   d3.json("data/yearly_stats.json"),
   d3.json("data/routes_2.json?v=route-notes-1"),
-]).then(([deaths, yearly, routes]) => {
+  d3.json("data/commercialization.json?v=commercial-1"),
+]).then(([deaths, yearly, routes, commercial]) => {
   DATA.deaths = deaths;
   DATA.yearly = yearly;
   DATA.routes = routes;
+  DATA.commercial = commercial;
 
   ch1Atlas = document.getElementById("ch1-atlas");
 
@@ -126,6 +130,7 @@ Promise.all([
   vizModules["conquest"].init(document.getElementById("ch2-conquest"), routes);
   vizModules["the-turn"].init(vizContainer, yearly);
   vizModules["the-cost"].init(vizContainer, deaths);
+  vizModules["the-commercial"].init(vizContainer, commercial);
 
   initScrollama();
 });
