@@ -37,6 +37,10 @@ const SUMMIT_CONVERGE_DIST = 500;
 const LINE_WIDTH = 3;
 const HOVER_LINE_WIDTH = 6.5;
 const DIM_OPACITY = 0.22;
+// single climbing dot, activated by selecting a route (prototype)
+const DOT_CLIMB_SPEED = 0.15;       // path-lengths per second, base -> summit
+const DOT_SIZE = 24.0;              // CSS px at the reference distance
+const DOT_SIZE_REF_DIST = 15000;
 const RAYCAST_THRESHOLD_PX = 6;
 const CLICK_DRAG_PX = 4;
 const HOVER_THROTTLE_MS = 33;
@@ -115,6 +119,14 @@ function routeDisplayColor(colorHex, active = false) {
     clamp(hsl.s * saturation, 0.18, active ? 0.86 : 0.64),
     clamp(hsl.l * lightnessScale + lightnessOffset, 0.32, maxLightness),
   );
+}
+
+// black/near-black routes (e.g. 1984 Australian) map to a near-invisible dot,
+// so show those as a white dot; every other route keeps its own bright colour
+function dotColor(colorHex, activeColor) {
+  const hsl = {};
+  new THREE.Color(colorHex).getHSL(hsl);
+  return hsl.l < 0.05 ? new THREE.Color(0xffffff) : activeColor.clone();
 }
 
 function paintByElevationAndSlope(geom) {
@@ -499,6 +511,69 @@ function buildLineMesh(points, color, dashed) {
   return line;
 }
 
+// cumulative 3D arc length so particles move at an even speed along a route
+function buildArcTable(points) {
+  const n = points.length;
+  const cum = new Float32Array(n);
+  for (let i = 1; i < n; i++) {
+    cum[i] = cum[i - 1] + points[i].distanceTo(points[i - 1]);
+  }
+  return { cum, total: n ? cum[n - 1] : 0 };
+}
+
+const DOT_VERT = `
+attribute float aT;
+attribute float aSize;
+uniform float uSize;
+uniform float uPixelRatio;
+uniform float uRefDist;
+varying float vT;
+void main() {
+  vT = aT;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  gl_PointSize = uSize * aSize * uPixelRatio * (uRefDist / max(1.0, -mv.z));
+  gl_Position = projectionMatrix * mv;
+}
+`;
+
+const DOT_FRAG = `
+uniform vec3 uColor;
+uniform float uOpacity;
+varying float vT;
+void main() {
+  vec2 d = gl_PointCoord - vec2(0.5);
+  float r = length(d);
+  if (r > 0.5) discard;
+  float core = 1.0 - smoothstep(0.15, 0.5, r);                                // solid bright centre, soft edge
+  float ends = smoothstep(0.0, 0.06, vT) * (1.0 - smoothstep(0.94, 1.0, vT)); // dissolve at the very ends of each climb
+  // dim hues (blue, red, purple) read as dull in an additive blend, so give
+  // them a white-hot centre; bright hues (green, cyan, gold) are left as-is
+  float lum = dot(uColor, vec3(0.2126, 0.7152, 0.0722));
+  float boost = 1.0 - smoothstep(0.30, 0.65, lum);
+  float hot = (1.0 - smoothstep(0.0, 0.32, r)) * boost;
+  vec3 col = mix(uColor, vec3(1.0), hot * 0.9);
+  gl_FragColor = vec4(col, core * ends * uOpacity);
+}
+`;
+
+function makeDotMaterial(color, pixelRatio) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: new THREE.Color(color) },
+      uOpacity: { value: 1.0 },
+      uSize: { value: DOT_SIZE },
+      uPixelRatio: { value: pixelRatio },
+      uRefDist: { value: DOT_SIZE_REF_DIST },
+    },
+    vertexShader: DOT_VERT,
+    fragmentShader: DOT_FRAG,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+}
+
 async function create(container, { routes }) {
   const [elev, routes3D] = await Promise.all([
     loadElevations(),
@@ -580,6 +655,9 @@ async function create(container, { routes }) {
   const activeColorByLabel = Object.fromEntries(
     routes.map((r) => [r.label, routeDisplayColor(r.color_hex, true)]),
   );
+  const dotColorByLabel = Object.fromEntries(
+    routes.map((r) => [r.label, dotColor(r.color_hex, activeColorByLabel[r.label])]),
+  );
   const routeByLabel = Object.fromEntries(routes.map((r) => [r.label, r]));
 
   // bundle mallory as one path
@@ -655,6 +733,55 @@ async function create(container, { routes }) {
     if (meshes.length) meshesByLabel[r.label] = meshes;
   }
 
+  // a single dot that climbs the selected route, base -> summit (prototype)
+  const arcByLabel = {};
+  for (const r of routes) {
+    const pts = final[r.label];
+    if (!pts || pts.length < 2) continue;
+    const { cum, total } = buildArcTable(pts);
+    if (total > 0) arcByLabel[r.label] = { pts, cum, total };
+  }
+
+  const dotPos = new Float32Array(3);
+  const dotAT = new Float32Array(1);
+  const dotGeom = new THREE.BufferGeometry();
+  dotGeom.setAttribute("position", new THREE.BufferAttribute(dotPos, 3));
+  dotGeom.setAttribute("aT", new THREE.BufferAttribute(dotAT, 1));
+  dotGeom.setAttribute("aSize", new THREE.BufferAttribute(new Float32Array([1]), 1));
+  const dotMat = makeDotMaterial(0xffffff, renderer.getPixelRatio());
+  const dot = new THREE.Points(dotGeom, dotMat);
+  dot.renderOrder = 2000;
+  dot.frustumCulled = false;   // its position moves every frame; the bounding sphere is stale
+  dot.visible = false;         // hidden until a route is selected
+  routesGroup.add(dot);
+
+  let dotStartMs = 0;          // when the current climb began (reset on each new selection)
+
+  function updateDot() {
+    const arc = selectedLabel ? arcByLabel[selectedLabel] : null;
+    if (!arc) { if (dot.visible) dot.visible = false; return; }
+    const { pts, cum, total } = arc;
+    const n = pts.length;
+    let t = ((performance.now() - dotStartMs) * 0.001) * DOT_CLIMB_SPEED;
+    t -= Math.floor(t);        // loop the climb while the route stays selected
+    const s = t * total;
+    let lo = 0, hi = n - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (cum[mid] <= s) lo = mid; else hi = mid;
+    }
+    const seg = cum[hi] - cum[lo] || 1;
+    const f = (s - cum[lo]) / seg;
+    const a = pts[lo], b = pts[hi];
+    dotPos[0] = a.x + (b.x - a.x) * f;
+    dotPos[1] = a.y + (b.y - a.y) * f;
+    dotPos[2] = a.z + (b.z - a.z) * f;
+    dotAT[0] = t;
+    dotGeom.attributes.position.needsUpdate = true;
+    dotGeom.attributes.aT.needsUpdate = true;
+    if (!dot.visible) dot.visible = true;
+  }
+
   for (const bc of [SOUTH_BC, NORTH_BC]) {
     const y = sampleHeight(elev, bc.x, bc.z) + LABEL_LIFT;
     const wrap = document.createElement("div");
@@ -706,6 +833,10 @@ async function create(container, { routes }) {
   function setSelected(label) {
     if (label === selectedLabel) return;
     selectedLabel = label;
+    if (label && arcByLabel[label]) {
+      dotStartMs = performance.now();                       // start the climb from the base
+      dotMat.uniforms.uColor.value.copy(dotColorByLabel[label]);
+    }
     applyHighlights();
   }
 
@@ -828,6 +959,8 @@ async function create(container, { routes }) {
     cloudVisibility += (cloudVisibilityTarget - cloudVisibility) * 0.12;
     u.uCloudAlphaScale.value = cloudVisibility;
 
+    updateDot();
+
     renderer.setRenderTarget(volClouds.sceneRT);
     renderer.render(scene, camera);
     renderer.setRenderTarget(volClouds.cloudRT);
@@ -858,6 +991,8 @@ async function create(container, { routes }) {
   function dispose() {
     stop();
     ro.disconnect();
+    dotGeom.dispose();
+    dotMat.dispose();
     if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
     if (labelRenderer.domElement.parentNode) {
       labelRenderer.domElement.parentNode.removeChild(labelRenderer.domElement);
