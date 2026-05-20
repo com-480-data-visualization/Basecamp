@@ -1,28 +1,22 @@
-// Keep the visitor at the intro until the hero image and the atlas image
-// behind "The Himalayas" have decoded, so neither shows up mid-load.
+// Hold the visitor at the intro until the atlas image behind "The Himalayas"
+// has decoded, so it never reveals mid-load.
 (function gateIntroScroll() {
   const root = document.documentElement;
   if (!root.classList.contains("is-loading")) return;
 
   const release = () => root.classList.remove("is-loading");
+  const atlas = document.querySelector(".ch1-atlas-image");
 
-  const ready = (img) => {
-    if (!img) return Promise.resolve();
-    if (img.decode) return img.decode().catch(() => {});
-    if (img.complete) return Promise.resolve();
-    return new Promise((resolve) => {
-      img.addEventListener("load", resolve, { once: true });
-      img.addEventListener("error", resolve, { once: true });
-    });
-  };
+  if (atlas && atlas.decode) {
+    atlas.decode().then(release, release);
+  } else if (atlas && !atlas.complete) {
+    atlas.addEventListener("load", release, { once: true });
+    atlas.addEventListener("error", release, { once: true });
+  } else {
+    release();
+  }
 
-  const images = [".hero-led-fallback", ".ch1-atlas-image"].map((sel) =>
-    document.querySelector(sel)
-  );
-
-  Promise.all(images.map(ready)).then(release);
-
-  // Backstop: never trap the visitor if an image stalls or fails to load.
+  // Backstop: never trap the visitor if the image stalls or fails to load.
   setTimeout(release, 8000);
 })();
 
