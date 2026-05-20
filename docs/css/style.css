@@ -39,6 +39,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Hold the visitor at the intro until the hero and atlas images are ready. */
+html.is-loading,
+html.is-loading body {
+  overflow: hidden;
+}
+
 p {
   line-height: 1.78;
 }
