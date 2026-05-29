@@ -98,6 +98,14 @@ Then open [http://localhost:8000](http://localhost:8000).
 
 **80% of the final grade**
 
+### Final project
+
+**The Price of the Peak** is an interactive scrollytelling website about Himalayan climbing, its commercialization, and how the risks of high-altitude expeditions changed from 1905 to 2019.
+
+- Live website: https://com-480-data-visualization.github.io/Basecamp/
+- Process book: [ThePriceOfThePeak_ProcessBook.pdf](reports/Milestone3/ThePriceOfThePeak_ProcessBook.pdf)
+- Screencast: [final_screencast.mp4](reports/Milestone3/final_screencast.mp4)
+
 
 ## Late policy
 
