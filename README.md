@@ -105,6 +105,7 @@ Then open [http://localhost:8000](http://localhost:8000).
 - Live website: https://com-480-data-visualization.github.io/Basecamp/
 - Process book: [ThePriceOfThePeak_ProcessBook.pdf](reports/Milestone3/ThePriceOfThePeak_ProcessBook.pdf)
 - Screencast: [final_screencast.mp4](reports/Milestone3/final_screencast.mp4)
+- Google Drive backup: [Milestone 3 materials](https://drive.google.com/drive/folders/1PJxbuqc0pel-ALlEhpKLJR52Cu8WCsge?usp=sharing)
 
 
 ## Late policy
